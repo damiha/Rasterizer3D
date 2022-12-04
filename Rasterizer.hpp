@@ -69,7 +69,7 @@ private:
 public:
     Rasterizer(Settings& settings);
     
-    void renderScene(std::vector<Mesh>& meshes, std::vector<Light>& lights);
+    void renderScene();
     sf::Sprite& getRenderedImage();
     
     void moveForward(float amount);

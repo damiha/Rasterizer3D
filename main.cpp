@@ -21,20 +21,6 @@ int main()
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "3D Rasterizer by Damian H.");
     bool isInitialized = ImGui::SFML::Init(window);
 
-    Mesh teapot("teapot.obj");
-    teapot.K_a = {0.2f, 0.1f, 0.0f};
-    teapot.K_d = {0.8, 0.4f, 0.0f};
-    teapot.K_s = {1.0f, 1.0f, 1.0f};
-    teapot.shininess = 3.0f;
-
-    Light light(glm::vec4{4.0f, 4.0f, 2.0f, 1.0f});
-
-    std::vector<Mesh> meshes;
-    std::vector<Light> lights;
-
-    meshes.push_back(teapot);
-    lights.push_back(light);
-
     Settings settings;
     Rasterizer rasterizer(settings);
     KeyHandler keyHandler;
@@ -86,7 +72,7 @@ int main()
             rasterizer.rotateScene(0.0f, -cameraRotation);
         
 
-        rasterizer.renderScene(meshes, lights);
+        rasterizer.renderScene();
         frameCounter.update();
 
         ImGui::Begin("Settings");

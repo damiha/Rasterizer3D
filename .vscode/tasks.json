@@ -15,6 +15,7 @@
                 "FrameCounter.cpp",
                 "Utils.cpp",
                 "Settings.cpp",
+                "Scene.cpp",
                 "imgui/*.cpp",
                 "-o",
                 "${fileDirname}/main.o",

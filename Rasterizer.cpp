@@ -15,7 +15,7 @@ Rasterizer::Rasterizer(Settings& settings) : settings(settings){
     // translate to move away from camera
     translateScene(0.0f, 0.0f, -5.0f);
 }
-void Rasterizer::renderScene(std::vector<Mesh>& meshes, std::vector<Light>& lights){
+void Rasterizer::renderScene(){
     
     clearRenderedImage();
     clearZBuffer();
@@ -23,7 +23,7 @@ void Rasterizer::renderScene(std::vector<Mesh>& meshes, std::vector<Light>& ligh
     modelViewMatrix = rotationMatrix * translationMatrix;
 
     // Rasterization logic
-    for(Mesh& mesh : meshes){
+    for(Mesh& mesh : settings.getScene().meshes){
 
         std::vector<glm::vec4>&  vertices = mesh.vertices;
 
@@ -64,7 +64,7 @@ void Rasterizer::renderScene(std::vector<Mesh>& meshes, std::vector<Light>& ligh
             glm::vec3 faceColor {0.0f, 0.0f, 0.0f};
 
             if(settings.getRenderMode() == Phong && settings.getShadingType() == FlatShading){
-                for(Light& light : lights){
+                for(Light& light : settings.getScene().lights){
 
                     faceColor += (light.I_a * mesh.K_a);
                     glm::vec3 toLight = (glm::normalize(glm::vec3(light.position) - face.center));
