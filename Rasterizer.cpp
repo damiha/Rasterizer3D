@@ -75,6 +75,7 @@ void Rasterizer::renderScene(std::vector<Mesh>& meshes, std::vector<Light>& ligh
                     glm::vec3 toCamera = glm::normalize(face.center);
                     glm::vec3 reflectiveRay = 2.0f * glm::dot(toLight, face.faceNormal) * face.faceNormal -toLight;
                     
+                    
                     if(glm::dot(reflectiveRay, face.faceNormal) > 0.0f){
                         float specularCoefficient = std::clamp(glm::dot(reflectiveRay, toCamera), 0.0f, 1.0f);
                         specularCoefficient = glm::pow(specularCoefficient, mesh.shininess);
