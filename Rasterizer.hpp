@@ -9,28 +9,13 @@
 #include "constants.hpp"
 #include "Mesh.hpp"
 #include "Light.hpp"
-
-enum ShadingType {
-    FlatShading = 0,
-    GouraudShading = 1,
-    PhongShading = 2
-};
-
-enum RenderMode {
-    WireFrame = 0,
-    ZBuffer = 1,
-    Shaded = 2
-};
+#include "Settings.hpp"
 
 class Rasterizer{
 
     // debug options (later activate via some key or GUI)
     bool colorTrianglesRandomly = false;
     bool showZBuffer = false;
-
-    // options for rasterizer visuals
-    ShadingType shadingType = FlatShading;
-    RenderMode renderMode = WireFrame;
 
     // virtual camera
     float focalLength = 1.0f;
@@ -77,11 +62,12 @@ private:
     void clearRenderedImage();
     void clearZBuffer();
 
-    
     bool isVertexInFrustum(glm::vec4& vertex);
+    glm::vec3 getZColor(float zValue);
+    Settings& settings;
 
 public:
-    Rasterizer();
+    Rasterizer(Settings& settings);
     
     void renderScene(std::vector<Mesh>& meshes, std::vector<Light>& lights);
     sf::Sprite& getRenderedImage();

@@ -5,7 +5,8 @@
 #include "Rasterizer.hpp"
 #include "Utils.hpp"
 
-Rasterizer::Rasterizer(){
+Rasterizer::Rasterizer(Settings& settings) : settings(settings){
+
     renderedTexture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
     renderedImage.setTexture(renderedTexture);
 
@@ -62,7 +63,7 @@ void Rasterizer::renderScene(std::vector<Mesh>& meshes, std::vector<Light>& ligh
 
             glm::vec3 faceColor {0.0f, 0.0f, 0.0f};
 
-            if(shadingType == FlatShading){
+            if(settings.getRenderMode() == Phong && settings.getShadingType() == FlatShading){
                 for(Light& light : lights){
 
                     faceColor += (light.I_a * mesh.K_a);
@@ -83,9 +84,8 @@ void Rasterizer::renderScene(std::vector<Mesh>& meshes, std::vector<Light>& ligh
                     }
                     
                 }
+                faceColor = glm::clamp(faceColor, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
             }
-
-            faceColor = glm::clamp(faceColor, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
 
             for(int y = minY; y <= maxY; y++){
                 for(int x = minX; x <= maxX; x++){
@@ -111,7 +111,14 @@ void Rasterizer::renderScene(std::vector<Mesh>& meshes, std::vector<Light>& ligh
                         if(0 <= linearIndex && linearIndex < WINDOW_WIDTH * WINDOW_HEIGHT 
                         && z < zBuffer[linearIndex]){
                             // Goroud and phong have to be computed in here
-                            setPixel(indexPixelX, indexPixelY, faceColor);
+
+                            if(settings.getRenderMode() == Phong){
+                                setPixel(indexPixelX, indexPixelY, faceColor);
+                            }
+                            else if(settings.getRenderMode() == ZBuffer){
+                                glm::vec3 zColor = getZColor(z);
+                                setPixel(indexPixelX, indexPixelY, zColor);
+                            }
                             zBuffer[linearIndex] = z;
                         }
                     }
@@ -212,5 +219,10 @@ bool Rasterizer::isVertexInFrustum(glm::vec4& vertex){
 
 void Rasterizer::clearZBuffer(){
     for(int i = 0; i < WINDOW_WIDTH * WINDOW_HEIGHT; i++)
-        zBuffer[i] = 10000000.0f;
+        zBuffer[i] = 1.0;
+}
+
+glm::vec3 Rasterizer::getZColor(float zValue){
+    float zPercentage = 1.0f - ((zValue + 1.0f) / 2.0f);
+    return glm::vec3 {zPercentage, zPercentage, zPercentage};
 }

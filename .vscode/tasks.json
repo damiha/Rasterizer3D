@@ -7,19 +7,22 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${file}",
+                "main.cpp",
                 "Mesh.cpp",
                 "Light.cpp",
                 "Rasterizer.cpp",
                 "KeyHandler.cpp",
                 "FrameCounter.cpp",
                 "Utils.cpp",
+                "Settings.cpp",
+                "imgui/*.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}.o",
+                "${fileDirname}/main.o",
                 "-lsfml-graphics",
                 "-lsfml-window",
                 "-lsfml-system",
                 "-O2",
+                "-lGL"
             ],
             "options": {
                 "cwd": "${fileDirname}"

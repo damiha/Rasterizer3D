@@ -1,8 +1,12 @@
+#include "imgui/imgui.h"
+#include "imgui/imgui-SFML.h"
+
 #include <SFML/Graphics.hpp>
 #include <glm/glm.hpp>
 #include <glm/vec4.hpp>
 #include <chrono>
 #include <iostream>
+#include <string>
 
 #include "constants.hpp"
 #include "Mesh.hpp"
@@ -10,10 +14,12 @@
 #include "KeyHandler.hpp"
 #include "FrameCounter.hpp"
 #include "Rasterizer.hpp"
+#include "Settings.hpp"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "3D Rasterizer by Damian H.");
+    bool isInitialized = ImGui::SFML::Init(window);
 
     Mesh teapot("teapot.obj");
     teapot.K_a = {0.2f, 0.1f, 0.0f};
@@ -29,13 +35,16 @@ int main()
     meshes.push_back(teapot);
     lights.push_back(light);
 
-    Rasterizer rasterizer;
+    Settings settings;
+    Rasterizer rasterizer(settings);
     KeyHandler keyHandler;
     FrameCounter frameCounter;
 
     // speed in world units per second
     float cameraTranslationPerSecond = 1.0f;
     float cameraRotationPerSecond = 1.0f;
+
+    sf::Clock deltaClock;
 
     while (window.isOpen())
     {
@@ -45,11 +54,14 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
+            ImGui::SFML::ProcessEvent(event);
+
             if (event.type == sf::Event::Closed)
                 window.close();
 
             keyHandler.processEvent(event);
         }
+        ImGui::SFML::Update(window, deltaClock.restart());
 
         if(keyHandler.isMovingForward)
             rasterizer.translateScene(0.0f, 0.0f, cameraTranslation);
@@ -77,12 +89,21 @@ int main()
         rasterizer.renderScene(meshes, lights);
         frameCounter.update();
 
-        std::cout << "FPS: " << frameCounter.getFrameRate() << std::endl;
+        ImGui::Begin("Settings");
+        ImGui::Combo("Scene", &settings.selectedScene, settings.sceneNames, 3);
+        ImGui::Combo("Render Mode", &settings.selectedRenderMode, settings.renderModeNames, 3);
+        ImGui::Combo("Shading Type", &settings.selectedShadingType, settings.shadingTypeNames, 3);
+
+        ImGui::Text("Statistics:");
+        ImGui::Text(frameCounter.getFrameRateString());
+        ImGui::End();
 
         window.clear();
         window.draw(rasterizer.getRenderedImage());
+        ImGui::SFML::Render(window);
         window.display();
     }
 
+    ImGui::SFML::Shutdown();
     return 0;
 }

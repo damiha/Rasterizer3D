@@ -1,3 +1,14 @@
+### Version 0.0.2
+
+- added ImGui to project
+- select different render modes (Phong, ZBuffer, WireFrame) and shading types (flat, gouroud, phong)
+
+![zbuffer shading](/dev%20documentation/ZBuffer%20and%20GUI.png)
+
+<figcaption> ZBuffer Render Mode selected</figcaption>
+
+<br>
+
 ### Version 0.0.1
 
 - added flat shading support

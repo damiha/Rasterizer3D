@@ -23,3 +23,8 @@ int FrameCounter::getFrameRate(){
 float FrameCounter::getDeltaTime(){
     return deltaTime;
 }
+
+const char* FrameCounter::getFrameRateString(){
+    frameRateString = std::string("FPS: ") + std::to_string(frameRate);
+    return frameRateString.c_str();
+}
