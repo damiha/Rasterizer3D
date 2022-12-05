@@ -41,6 +41,7 @@ private:
     };
 
     glm::mat4 projectionMatrix = glm::make_mat4(projectionEntries);
+    glm::mat4 projectionMatrixInv = glm::inverse(projectionMatrix);
 
     float imageEntries[16] = {
         WINDOW_WIDTH, 0, 0, 0,

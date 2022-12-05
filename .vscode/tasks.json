@@ -16,6 +16,7 @@
                 "Utils.cpp",
                 "Settings.cpp",
                 "Scene.cpp",
+                "Shading.cpp",
                 "imgui/*.cpp",
                 "-o",
                 "${fileDirname}/main.o",

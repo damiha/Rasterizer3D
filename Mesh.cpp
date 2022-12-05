@@ -11,6 +11,7 @@ Mesh::Mesh(std::string filePath){
     
     std::string space = " ";
     std::string singleSlash = "/";
+    std::string doubleSlash = "//";
     std::string tempLine;
     std::ifstream file(filePath);
 
@@ -73,6 +74,19 @@ Mesh::Mesh(std::string filePath){
 
                             face.textureCoordinateIndecies[i - 1] = std::stoi(vertexParts[1]) - 1;
                             face.vertexNormalIndices[i - 1] = std::stoi(vertexParts[2]) - 1;
+                        }
+                    }
+                    else if(containsSingleSlashes && containsDoubleSlashes){
+
+                        for(int i = 1; i <= 3; i++){
+                            std::vector<std::string> vertexParts;
+                            splitIntoArray(lineParts[i], doubleSlash, vertexParts);
+
+                            if(i == 1) v0Index = std::stoi(vertexParts[0]) - 1;
+                            if(i == 2) v1Index = std::stoi(vertexParts[0]) - 1;
+                            if(i == 3) v2Index = std::stoi(vertexParts[0]) - 1;
+
+                            face.vertexNormalIndices[i - 1] = std::stoi(vertexParts[1]) - 1;
                         }
                     }
 

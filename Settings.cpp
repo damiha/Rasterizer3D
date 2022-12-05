@@ -14,7 +14,7 @@ Settings::Settings(){
     suzanne.K_s = {1.0f, 1.0f, 1.0f};
     suzanne.shininess = 3.0f;
 
-    Light light(glm::vec4{4.0f, 4.0f, 2.0f, 1.0f});
+    Light light(glm::vec4{0.0f, 0.0f, 5.0f, 1.0f});
 
     Scene teapotScene;
     teapotScene.meshes.push_back(teapot);
