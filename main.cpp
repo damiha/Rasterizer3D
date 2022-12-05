@@ -76,7 +76,7 @@ int main()
         frameCounter.update();
 
         ImGui::Begin("Settings");
-        ImGui::Combo("Scene", &settings.selectedScene, settings.sceneNames, 3);
+        ImGui::Combo("Scene", &settings.selectedScene, settings.sceneNames, 4);
         ImGui::Combo("Render Mode", &settings.selectedRenderMode, settings.renderModeNames, 3);
         ImGui::Combo("Shading Type", &settings.selectedShadingType, settings.shadingTypeNames, 3);
 

@@ -16,23 +16,6 @@ glm::vec3 Utils::getBarycentricCoordinates(glm::vec2& P, glm::vec2& A, glm::vec2
     return {areaOppositeA * totalAreaInv, areaOppositeB * totalAreaInv, areaOppositeC * totalAreaInv};
 }
 
-glm::vec3 Utils::getBarycentricCoordinates(glm::vec3& P, glm::vec3& A, glm::vec3& B, glm::vec3& C){
-
-    glm::dvec3 AB = B - A;
-    glm::dvec3 AC = C - A;
-    glm::dvec3 AP = P - A;
-    glm::dvec3 PB = B - P;
-    glm::dvec3 PC = P - C;
-    glm::dvec3 surfaceNormal = glm::cross(AB, AC);
-
-    double totalAreaInv = 1.0 / glm::dot(surfaceNormal, surfaceNormal);
-    double areaOppositeC = glm::dot(surfaceNormal, glm::cross(AB, AP));
-    double areaOppositeB = glm::dot(surfaceNormal, glm::cross(AP, AC));
-    double areaOppositeA = glm::dot(surfaceNormal, glm::cross(PB, PC));
-
-    return {(float) (areaOppositeA * totalAreaInv), (float) (areaOppositeB * totalAreaInv), (float) (areaOppositeC * totalAreaInv)};
-}
-
 bool Utils::areBarycentricCoordinatesValid(glm::vec3& barycentricCoordinates){
     float alpha = barycentricCoordinates[0];
     float beta = barycentricCoordinates[1];

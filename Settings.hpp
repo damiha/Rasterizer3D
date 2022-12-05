@@ -22,13 +22,13 @@ private:
     std::vector<Scene> scenes;
 
 public:
-    const char* sceneNames[3]{"Utah Teapot", "Suzanne", "Textured Cube[???]"};
+    const char* sceneNames[4]{"Utah Teapot", "Suzanne", "Sphere", "Textured Cube[???]"};
     int selectedScene = 0;
 
     const char* renderModeNames[3]{"Phong", "WireFrame[???]", "ZBuffer"};
     int selectedRenderMode = 0;
 
-    const char* shadingTypeNames[3]{"Flat", "Gouraud[???]", "Phong[???]"};
+    const char* shadingTypeNames[3]{"Flat", "Gouraud", "Phong[???]"};
     int selectedShadingType = 0;
 
     RenderMode getRenderMode();

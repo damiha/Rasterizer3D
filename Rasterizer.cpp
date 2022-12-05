@@ -105,23 +105,10 @@ void Rasterizer::renderScene(){
 
                                 if(settings.getShadingType() == GouraudShading ||
                                     settings.getShadingType() == PhongShading){
-                                    
-                                    // get back 3D coordinates from perspective correct interpolation
-                                    /*
-                                    float x3D = (((float) x - WINDOW_WIDTH/2.0f)/WINDOW_WIDTH);
-                                    float y3D = (((float) y - WINDOW_HEIGHT/2.0f)/WINDOW_HEIGHT);
-                                    float z3D = z;
-                                    glm::vec3 vp_3D = projectionMatrixInv * (z * glm::vec4{x3D, y3D, z3D, 1.0f});
-                                    */
 
                                     glm::vec3 v0_3D = v0_tf;
                                     glm::vec3 v1_3D = v1_tf;
                                     glm::vec3 v2_3D = v2_tf;
-                                    
-                                    /*
-                                    glm::vec3 barycentricCoordinates3D = Utils::getBarycentricCoordinates(vp_3D, v0_3D, v1_3D, v2_3D);
-                                    */
-                                    //Utils::printBarycentricCoordinates(barycentricCoordinates);
 
                                     if(settings.getShadingType() == GouraudShading){
 
@@ -138,10 +125,16 @@ void Rasterizer::renderScene(){
                                             modelViewMatrix,
                                             settings.getScene().lights, mesh, v2_3D,
                                             mesh.vertexNormals[face.vertexNormalIndices[2]]);
+                                        
+                                        glm::vec3 barycentricCoordinatesCorrected =(barycentricCoordinates * z);
 
-                                        glm::vec3 pixelColor =  barycentricCoordinates[0] * v0Color +
-                                                                barycentricCoordinates[1] * v1Color + 
-                                                                barycentricCoordinates[2] * v2Color;
+                                        barycentricCoordinatesCorrected /= (
+                                            barycentricCoordinatesCorrected[0] + barycentricCoordinatesCorrected[1] + barycentricCoordinatesCorrected[2]);
+
+                                        glm::vec3 pixelColor =  
+                                        barycentricCoordinatesCorrected[0] * v0Color +
+                                        barycentricCoordinatesCorrected[1] * v1Color + 
+                                        barycentricCoordinatesCorrected[2] * v2Color;
 
                                         pixelColor = glm::clamp(pixelColor, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
                                         setPixel(indexPixelX, indexPixelY, pixelColor);

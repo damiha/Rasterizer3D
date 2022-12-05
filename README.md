@@ -1,3 +1,16 @@
+### Version 0.0.3
+
+- added new scenes
+- extended Mesh-Loader for obj.format
+- added Gouraud shading
+- implemented perspective correct implementation
+
+![flat shading fix](/dev%20documentation/Flat%20shading%20Bug%20fix.png)
+<figcaption>Phong Modell after bug fix</figcation>
+
+![gouraud shading](/dev%20documentation/Gouraud%20Shading.png)
+<figcaption>Gouraud Shading</figcation>
+
 ### Version 0.0.2
 
 - added ImGui to project
