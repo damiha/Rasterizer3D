@@ -1,4 +1,5 @@
 #include "Mesh.hpp"
+#include "Utils.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -19,7 +20,7 @@ Mesh::Mesh(std::string filePath){
         while(getline(file, tempLine)){
             
             std::vector<std::string> lineParts;
-            splitIntoArray(tempLine, space, lineParts);
+            Utils::splitIntoArray(tempLine, space, lineParts);
 
             if(lineParts.size() > 0){
 
@@ -66,7 +67,7 @@ Mesh::Mesh(std::string filePath){
 
                         for(int i = 1; i <= 3; i++){
                             std::vector<std::string> vertexParts;
-                            splitIntoArray(lineParts[i], singleSlash, vertexParts);
+                            Utils::splitIntoArray(lineParts[i], singleSlash, vertexParts);
 
                             if(i == 1) v0Index = std::stoi(vertexParts[0]) - 1;
                             if(i == 2) v1Index = std::stoi(vertexParts[0]) - 1;
@@ -80,7 +81,7 @@ Mesh::Mesh(std::string filePath){
 
                         for(int i = 1; i <= 3; i++){
                             std::vector<std::string> vertexParts;
-                            splitIntoArray(lineParts[i], doubleSlash, vertexParts);
+                            Utils::splitIntoArray(lineParts[i], doubleSlash, vertexParts);
 
                             if(i == 1) v0Index = std::stoi(vertexParts[0]) - 1;
                             if(i == 2) v1Index = std::stoi(vertexParts[0]) - 1;
@@ -96,7 +97,7 @@ Mesh::Mesh(std::string filePath){
                     glm::vec3 v13D = glm::vec3(vertices[v1Index]);
                     glm::vec3 v23D = glm::vec3(vertices[v2Index]);
 
-                    face.faceNormal = glm::normalize(glm::cross(v13D - v03D, v23D - v03D));
+                    face.normal = glm::normalize(glm::cross(v13D - v03D, v23D - v03D));
 
                     face.center = (v03D + v13D + v23D) / 3.0f;
                     faces.push_back(face);
@@ -107,16 +108,4 @@ Mesh::Mesh(std::string filePath){
     else {
         std::cout << "ERROR: couldn't open file" << std::endl;
     }
-}
-
-void Mesh::splitIntoArray(std::string& string, std::string& delimiter, std::vector<std::string>& outArr){
-    auto start = 0U;
-    auto end = string.find(delimiter);
-
-    while(end != std::string::npos){
-        outArr.push_back(string.substr(start, end - start));
-        start = end + delimiter.length();
-        end = string.find(delimiter, start);
-    }
-    outArr.push_back(string.substr(start, end-start));
 }

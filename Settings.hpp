@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Scene.hpp"
+#include "Texture.hpp"
 
 enum ShadingType {
     FlatShading = 0,
@@ -22,7 +23,7 @@ private:
     std::vector<Scene> scenes;
 
 public:
-    const char* sceneNames[4]{"Utah Teapot", "Suzanne", "Sphere", "Textured Cube[???]"};
+    const char* sceneNames[4]{"Utah Teapot", "Suzanne", "Textured Cube", "Sphere[???]"};
     int selectedScene = 0;
 
     const char* renderModeNames[3]{"Phong", "WireFrame[???]", "ZBuffer"};
@@ -33,7 +34,10 @@ public:
 
     RenderMode getRenderMode();
     ShadingType getShadingType();
-    Scene& getScene();    
+    Scene& getScene();
+
+    // global textures so they don't meshes just have to refer to them by their index
+    std::vector<Texture> textures;
 
     Settings();
 };

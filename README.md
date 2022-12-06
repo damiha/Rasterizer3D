@@ -1,3 +1,19 @@
+### Version 0.0.4
+
+- bug fix in Shading (vertex normals weren't calculated correctly, now with transpose of inverse of model view matrix)
+
+- bug fix in Shading (diffuse term now clamped to [0, 1])
+
+- Textures (only PPM P3 support) and integration with Phong model
+
+![textures without phong](/dev%20documentation/Textures%20No%20Phong.png)
+
+<figcaption>Textures without phong model</figcaption>
+
+![textures phong](/dev%20documentation/Textures%20Phong.png)
+
+<figcaption>Textures with phong model</figcaption>
+
 ### Version 0.0.3
 
 - added new scenes
@@ -6,7 +22,7 @@
 - implemented perspective correct implementation
 
 ![flat shading fix](/dev%20documentation/Flat%20shading%20Bug%20fix.png)
-<figcaption>Phong Modell after bug fix</figcation>
+<figcaption>Phong Model after bug fix</figcation>
 
 ![gouraud shading](/dev%20documentation/Gouraud%20Shading.png)
 <figcaption>Gouraud Shading</figcation>

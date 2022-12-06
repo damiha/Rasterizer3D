@@ -23,6 +23,10 @@ void Rasterizer::renderScene(){
 
     modelViewMatrix = rotationMatrix * translationMatrix;
 
+    // do transformation and projection at once to save computations
+    glm::mat4 modelProjectionMatrix = projectionMatrix * modelViewMatrix;
+    glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+
     // Rasterization logic
     for(Mesh& mesh : settings.getScene().meshes){
 
@@ -30,18 +34,17 @@ void Rasterizer::renderScene(){
 
         for(Face& face : mesh.faces){
 
-            glm::vec4 v0 = vertices[face.vertexIndices[0]];
-            glm::vec4 v1 = vertices[face.vertexIndices[1]];
-            glm::vec4 v2 = vertices[face.vertexIndices[2]];
+            glm::vec4 v0_init = vertices[face.vertexIndices[0]];
+            glm::vec4 v1_init = vertices[face.vertexIndices[1]];
+            glm::vec4 v2_init = vertices[face.vertexIndices[2]];
 
-            // save for interpolation before projection
-            glm::vec4 v0_tf = modelViewMatrix * v0;
-            glm::vec4 v1_tf = modelViewMatrix * v1;
-            glm::vec4 v2_tf = modelViewMatrix * v2;
+            glm::vec3 v0_init_3D = glm::vec3(v0_init);
+            glm::vec3 v1_init_3D = glm::vec3(v1_init);
+            glm::vec3 v2_init_3D = glm::vec3(v2_init);
 
-            v0 = projectionMatrix * v0_tf;
-            v1 = projectionMatrix * v1_tf;
-            v2 = projectionMatrix * v2_tf;
+            glm::vec4 v0 = modelProjectionMatrix * v0_init;
+            glm::vec4 v1 = modelProjectionMatrix * v1_init;
+            glm::vec4 v2 = modelProjectionMatrix * v2_init;
 
             // vertices are supposes to be in a cube with each side length being in [-W_clip, W_clip]
             // TODO: clipping algorithm (only when hard shadows are implemented)
@@ -68,13 +71,33 @@ void Rasterizer::renderScene(){
             maxY = std::clamp(maxY, 0, WINDOW_HEIGHT - 1);
 
             glm::vec3 faceColor {0.0f, 0.0f, 0.0f};
+            glm::vec3 v0Color {0.0f, 0.0f, 0.0f};
+            glm::vec3 v1Color {0.0f, 0.0f, 0.0f};
+            glm::vec3 v2Color {0.0f, 0.0f, 0.0f};
 
             if(settings.getRenderMode() == Phong && settings.getShadingType() == FlatShading){
 
-                glm::vec3 faceCenter = glm::vec3(modelViewMatrix * glm::vec4{
-                face.center[0], face.center[1], face.center[2], 1.0f});
+                faceColor = Shading::computeVertexColor(
+                    modelViewMatrix, normalMatrix, settings.getScene().lights, mesh, face.center, face.normal);
+            }
 
-                faceColor = Shading::computeVertexColor(modelViewMatrix, settings.getScene().lights, mesh, faceCenter, face.faceNormal);
+            if(settings.getRenderMode() == Phong && settings.getShadingType() == GouraudShading){
+
+                v0Color = Shading::computeVertexColor(
+                    modelViewMatrix,normalMatrix,
+                    settings.getScene().lights, mesh,
+                    v0_init_3D,
+                    mesh.vertexNormals[face.vertexNormalIndices[0]]);
+
+                v1Color = Shading::computeVertexColor(
+                    modelViewMatrix, normalMatrix,
+                    settings.getScene().lights, mesh, v1_init_3D,
+                    mesh.vertexNormals[face.vertexNormalIndices[1]]);
+
+                v2Color = Shading::computeVertexColor(
+                    modelViewMatrix, normalMatrix,
+                    settings.getScene().lights, mesh, v2_init_3D,
+                    mesh.vertexNormals[face.vertexNormalIndices[2]]);
             }
 
             for(int y = minY; y <= maxY; y++){
@@ -99,51 +122,60 @@ void Rasterizer::renderScene(){
                         int linearIndex = (indexPixelY * WINDOW_WIDTH) + indexPixelX;
 
                         if(0 <= linearIndex && linearIndex < WINDOW_WIDTH * WINDOW_HEIGHT 
-                        && z < zBuffer[linearIndex]){                           
+                        && z < zBuffer[linearIndex]){                          
 
                             if(settings.getRenderMode() == Phong){
 
-                                if(settings.getShadingType() == GouraudShading ||
-                                    settings.getShadingType() == PhongShading){
+                                glm::vec3 pixelColor {0.0f, 0.0f, 0.0f};
+                                // multiplied with pixelColor later on so
+                                // no texture means => neutral element
+                                glm::vec3 textureColor {1.0f, 1.0f, 1.0f};
 
-                                    glm::vec3 v0_3D = v0_tf;
-                                    glm::vec3 v1_3D = v1_tf;
-                                    glm::vec3 v2_3D = v2_tf;
+                                glm::vec3 barycentricCoordinatesCorrected =(barycentricCoordinates * z);
 
-                                    if(settings.getShadingType() == GouraudShading){
+                                barycentricCoordinatesCorrected /= (
+                                    barycentricCoordinatesCorrected[0] + barycentricCoordinatesCorrected[1] + barycentricCoordinatesCorrected[2]);
 
-                                        glm::vec3 v0Color = Shading::computeVertexColor(modelViewMatrix,
-                                            settings.getScene().lights, mesh, v0_3D,
-                                            mesh.vertexNormals[face.vertexNormalIndices[0]]);
+                                if(mesh.textureIndex >= 0){
+                                    Texture& texture = settings.textures[mesh.textureIndex];
 
-                                        glm::vec3 v1Color = Shading::computeVertexColor(
-                                            modelViewMatrix,
-                                            settings.getScene().lights, mesh, v1_3D,
-                                            mesh.vertexNormals[face.vertexNormalIndices[1]]);
+                                    int t0Index = face.textureCoordinateIndecies[0];
+                                    int t1Index = face.textureCoordinateIndecies[1];
+                                    int t2Index = face.textureCoordinateIndecies[2];
 
-                                        glm::vec3 v2Color = Shading::computeVertexColor(
-                                            modelViewMatrix,
-                                            settings.getScene().lights, mesh, v2_3D,
-                                            mesh.vertexNormals[face.vertexNormalIndices[2]]);
-                                        
-                                        glm::vec3 barycentricCoordinatesCorrected =(barycentricCoordinates * z);
+                                    glm::vec2& t0 = mesh.textureCoordinates[t0Index];
+                                    glm::vec2& t1 = mesh.textureCoordinates[t1Index];
+                                    glm::vec2& t2 = mesh.textureCoordinates[t2Index];
 
-                                        barycentricCoordinatesCorrected /= (
-                                            barycentricCoordinatesCorrected[0] + barycentricCoordinatesCorrected[1] + barycentricCoordinatesCorrected[2]);
+                                    glm::vec2 textureCoordinate = barycentricCoordinatesCorrected[0] * t0 +
+                                    barycentricCoordinatesCorrected[1] * t1 +
+                                    barycentricCoordinatesCorrected[2] * t2;
 
-                                        glm::vec3 pixelColor =  
-                                        barycentricCoordinatesCorrected[0] * v0Color +
-                                        barycentricCoordinatesCorrected[1] * v1Color + 
-                                        barycentricCoordinatesCorrected[2] * v2Color;
+                                    textureColor = texture.getColorValue(textureCoordinate);
 
-                                        pixelColor = glm::clamp(pixelColor, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
-                                        setPixel(indexPixelX, indexPixelY, pixelColor);
-                                    }
-
+                                    textureColor = Utils::clampColor(textureColor);
                                 }
-                                else {
-                                    setPixel(indexPixelX, indexPixelY, faceColor);
+
+                                if(settings.getShadingType() == GouraudShading){
+
+                                    pixelColor +=  
+                                    barycentricCoordinatesCorrected[0] * v0Color +
+                                    barycentricCoordinatesCorrected[1] * v1Color + 
+                                    barycentricCoordinatesCorrected[2] * v2Color;
+
+                                    pixelColor = Utils::clampColor(pixelColor);
                                 }
+                                else if(settings.getShadingType() == FlatShading){
+                                    pixelColor += faceColor;
+                                    pixelColor = Utils::clampColor(pixelColor);
+                                }
+                                
+                                // combine material color of Phong model
+                                // with texture information
+                                // IN THE FUTURE: make ambient, diffuse, specular maps
+                                pixelColor *= textureColor;
+
+                                setPixel(indexPixelX, indexPixelY, pixelColor);
                             }
                             else if(settings.getRenderMode() == ZBuffer){
                                 glm::vec3 zColor = getZColor(z);

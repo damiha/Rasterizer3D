@@ -15,7 +15,7 @@ struct Face {
     glm::uvec3 textureCoordinateIndecies;
 
     // for light calculation
-    glm::vec3 faceNormal;
+    glm::vec3 normal;
     glm::vec3 center;
 };
 
@@ -33,9 +33,10 @@ public:
     glm::vec3 K_s;
     int shininess = 1.0f;
 
-    Mesh(std::string filePath);
+    // index into the global texture array in the settings class
+    int textureIndex = -1;
 
-    void splitIntoArray(std::string& string, std::string& delimiter, std::vector<std::string>& outArr);
+    Mesh(std::string filePath);
 };
 
 #endif
