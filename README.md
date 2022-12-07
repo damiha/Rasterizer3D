@@ -27,6 +27,12 @@ as a starting point into computer graphics (have to do a lot more in that direct
 
 - Graphics card acceleration
 
+### Version 0.0.5
+
+- added phong shading (not available on github yet)
+
+![phong shading teapot](/dev%20documentation/Phong%20shading%20Teapot.png)
+
 ### Version 0.0.4
 
 - bug fix in Shading (vertex normals weren't calculated correctly, now with transpose of inverse of model view matrix)
