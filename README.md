@@ -1,3 +1,32 @@
+### Disclaimer
+
+The code is a mess and highly inefficient at the moment (on top of running on an CPU). The project should serve
+as a starting point into computer graphics (have to do a lot more in that direction in the future).
+
+### What's missing
+
+- correct perspective interpolation (works at the moment, but gouraud and phong shading don't look strong enough)
+
+- hard shadows
+
+- Wireframe mode (use something like the Bresenham-Algorithm)
+
+- Hard shadows (and soft shadows using PCF)
+
+- Mip maps
+
+- Normal maps
+
+- Bilinear interpolation
+
+- intuitive camera movement (like the trackball camera)
+
+- CMake integration
+
+- Depth sorting
+
+- Graphics card acceleration
+
 ### Version 0.0.4
 
 - bug fix in Shading (vertex normals weren't calculated correctly, now with transpose of inverse of model view matrix)
