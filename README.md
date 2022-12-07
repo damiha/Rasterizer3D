@@ -31,7 +31,7 @@ as a starting point into computer graphics (have to do a lot more in that direct
 
 - added phong shading (not available on github yet)
 
-![phong shading teapot](/dev%20documentation/Phong%20shading%20Teapot.png)
+![phong shading teapot](Phong%20shading%20Teapot.png)
 
 ### Version 0.0.4
 
